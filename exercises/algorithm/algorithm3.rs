@@ -3,10 +3,16 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
+fn sort<T: std::cmp::PartialOrd>(array: &mut [T]) {
 	//TODO
+    for i in 0..array.len() {  // 外层循环控制排序轮数
+        for j in 0..array.len() - i - 1 {  // 内层循环控制每轮比较次数
+            if array[j] > array[j + 1] {  // 如果前一个元素大于后一个
+                array.swap(j, j + 1);    // 交换它们的位置
+            }
+        }
+    }
 }
 #[cfg(test)]
 mod tests {

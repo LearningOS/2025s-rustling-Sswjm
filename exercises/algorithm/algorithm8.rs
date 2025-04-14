@@ -2,7 +2,6 @@
 	queue
 	This question requires you to use queues to implement the functionality of the stac
 */
-// I AM NOT DONE
 
 #[derive(Debug)]
 pub struct Queue<T> {
@@ -68,14 +67,45 @@ impl<T> myStack<T> {
     }
     pub fn push(&mut self, elem: T) {
         //TODO
+        // 压入元素时优先压入主队列
+        // 哪个队列不是空的, 哪个队列就是主队列
+        // 如果都是空的默认压入一号队列
+        // pop 操作可以保证正常情况下两个队列至少有一个为空
+        if !self.q1.is_empty() {
+            self.q1.enqueue(elem);
+        } else {
+            self.q2.enqueue(elem);
+        }
     }
     pub fn pop(&mut self) -> Result<T, &str> {
         //TODO
-		Err("Stack is empty")
+        if self.is_empty() {
+            return Err("Stack is empty");
+        }
+        // 确定哪个队列是非空的 (主队列)
+        let (full, empty) = if !self.q1.is_empty() {
+            (&mut self.q1, &mut self.q2)
+        } else {
+            (&mut self.q2, &mut self.q1)
+        };
+        // 将主队列中的元素 (除了最后一个) 全部转移到空队列
+        // 可能你会觉得这很麻烦, 效率很低
+        // 没错, 因为我们题目给出的队列的底层结构是动态数组
+        // 弹出首个元素的时间复杂度是 O(n)
+        // 如果我们的队列实现可以做到压入和弹出都是 O(1)
+        // 那么你就能理解这种实现方案了
+        while full.size() > 1 {
+            if let Ok(val) = full.dequeue() {
+                empty.enqueue(val);
+            }
+        }
+        // 弹出并返回主队列的最后一个元素
+        full.dequeue()
     }
+    // 只有当两个队列都为空时栈为空
     pub fn is_empty(&self) -> bool {
-		//TODO
-        true
+        //TODO
+        self.q1.is_empty() && self.q2.is_empty()
     }
 }
 

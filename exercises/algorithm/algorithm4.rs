@@ -3,7 +3,6 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -48,15 +47,18 @@ where
         BinarySearchTree { root: None }
     }
 
-    // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        if let Some(ref mut root) = self.root {
+            root.insert(value);
+        } else {
+            self.root = Some(Box::new(TreeNode::new(value)));
+        }
     }
-
-    // Search for a value in the BST
+    
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        self.root.as_ref().map_or(false, |root| root.search(value))
     }
 }
 
@@ -67,6 +69,40 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+        // 逻辑很清晰, 就像我们之前说的那样, 小值往左走, 大值往右走
+        match value.cmp(&self.value) {
+            Ordering::Less => {
+                // 存在则递归调用
+                if let Some(ref mut left) = self.left {
+                    left.insert(value);
+                // 不存在就直接插入
+                } else {
+                    self.left = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Ordering::Greater => {
+                if let Some(ref mut right) = self.right {
+                    right.insert(value);
+                } else {
+                    self.right = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Ordering::Equal => {
+                // 重复值处理: 这里我们选择不插入重复值
+                // 也可以根据需求选择其他处理方式
+            }
+        }
+    }
+
+    // 辅助函数
+    // 递归查找节点
+    fn search(&self, value: T) -> bool {
+        // 搜索也是同理, 小值去左边找, 大值去右边找
+        match value.cmp(&self.value) {
+            Ordering::Less => self.left.as_ref().map_or(false, |left| left.search(value)),
+            Ordering::Greater => self.right.as_ref().map_or(false, |right| right.search(value)),
+            Ordering::Equal => true,
+        }
     }
 }
 
